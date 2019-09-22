@@ -5,8 +5,9 @@ import copy
 
 
 save_images = True
-selected_gesture = 'palm'
-img_counter = 0
+selected_gesture = 'peace'
+selected_side = 'left'
+img_counter = 350
 
 
 # parameters
@@ -37,16 +38,23 @@ while camera.isOpened():
     ret, frame = camera.read()
     frame = cv2.bilateralFilter(frame, 5, 50, 100)  # smoothing filter
     frame = cv2.flip(frame, 1)  # flip the frame horizontally
-    cv2.rectangle(frame, (int(cap_region_x_begin * frame.shape[1]), 0),
+    if selected_side == 'right':
+        cv2.rectangle(frame, (int(cap_region_x_begin * frame.shape[1]), 0),
                   (frame.shape[1], int(cap_region_y_end * frame.shape[0])), (255, 0, 0), 2)
-
+    else:
+        cv2.rectangle(frame, (0, 0),
+                  (int(cap_region_x_begin * frame.shape[1]), int(cap_region_y_end * frame.shape[0])), (255, 0, 0), 2)
     cv2.imshow('original', frame)
 
     # Run once background is captured
     if isBgCaptured == 1:
         img = remove_background(frame)
-        img = img[0:int(cap_region_y_end * frame.shape[0]),
+        if selected_side == 'right':
+            img = img[0:int(cap_region_y_end * frame.shape[0]),
               int(cap_region_x_begin * frame.shape[1]):frame.shape[1]]  # clip the ROI
+        else:
+            img = img[0:int(cap_region_y_end * frame.shape[0]),
+              0:int(cap_region_x_begin * frame.shape[1])]  # clip the ROI
         cv2.imshow('mask', img)
 
         # convert the image into binary image
