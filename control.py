@@ -13,9 +13,6 @@ S = 60
 FPS = 25
 dimensions = (960, 720)
 
-ddir = "Session {}".format(str(datetime.datetime.now()).replace(':','-').replace('.','_'))
-os.mkdir(ddir)
-
 class FrontEnd(object):
     """ Maintains the Tello display and moves it through the keyboard keys.
         Press escape key to quit.
@@ -94,27 +91,9 @@ class FrontEnd(object):
                 frame_read.stop()
                 break
 
-            theTime = str(datetime.datetime.now()).replace(':','-').replace('.','_')
-
-            self.screen.fill([0, 0, 0])
-            frame = cv2.cvtColor(frame_read.frame, cv2.COLOR_BGR2RGB)
-            cv2.imwrite("{}/tellocap{}.jpg".format(ddir,theTime),self.tello.get_frame_read().frame)
             frame = np.rot90(frame)
             frame = pygame.surfarray.make_surface(frame)
             self.screen.blit(frame, (0, 0))
-
-            # bat = self.battery()
-            # batCol = (255, 0, 0)
-            
-            # if bat >= 50:
-            #     batCol = (0,255,0)
-            # elif bat > 15 and bat < 50:
-            #     batCol = (255,255,0)
-            # elif bat <= 15:
-            #     batCol = (255,0,0)
-
-            # self.DrawText("Battery: {}".format(bat),60,batCol,(32,32))
-            self.DrawText("Classifier",100,(255,255,0),(dimensions[0]/4,dimensions[1]-115))
 
             pygame.display.update()
 
@@ -123,9 +102,6 @@ class FrontEnd(object):
         # Call it always before finishing. I deallocate resources.
         self.tello.end()
         pygame.quit()
-
-    # def battery(self):
-    #     return int(self.tello.get_battery()[:2])
 
     def DrawText(self, txt, fSize, Color, Loc):
         myfont = pygame.font.SysFont('Impact', fSize)
